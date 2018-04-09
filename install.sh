@@ -15,6 +15,14 @@ then
   exit 1
 fi
 
+OS_VERSION=$(cat /etc/os-release)
+if [[ "$OS_VERSION" =~ "CentOS-7" ]]
+then
+  printf "\n\n This script is designed for installation on CentOS 7 ...\n"
+  printf "\n\n EXITING : installation FAILED\n"
+  exit 1
+fi
+
 APACHE_INSTALLED=$(which apache2)
 if [[ "$APACHE_INSTALLED" == "" ]]
 then
