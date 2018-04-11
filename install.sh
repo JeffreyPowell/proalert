@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 #          install.sh, 'ProAlert' configuration script.
 # Author : Jeffrey.Powell ( jffrypwll <at> googlemail <dot> com )
@@ -24,8 +24,8 @@ then
   exit 1
 fi
 
-yum clean all
-yum update -y
+# yum clean all
+# yum update -y
 
 ###   ###   Install APACHE   ###   ###
 
@@ -39,7 +39,12 @@ then
   systemctl enable httpd.service
   firewall-cmd --permanent --add-port=8080/tcp
 
-  mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.dissabled
+  mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.disabled
+  
+  #echo "IncludeOptional sites-enabled/*.conf" >> /etc/httpd/conf/httpd.conf
+  mkdir /etc/httpd/sites-available
+  mkdir /etc/httpd/sites-enabled
+
   systemctl restart httpd.service
 
   APACHE_INSTALLED=$(which httpd)
@@ -104,14 +109,15 @@ then
 #  mkdir -p "/opt/proalert/app" 
 #  cd /opt/proalert/app
 
-  if [ -d "/opt/proalert/app" ]
+  if [ -d "/opt/proalert/proalert-master" ]
   then
-    rm -rf "/opt/proalert/app"
+    rm -rf "/opt/proalert/proalert-master"
+    rm -rf /opt/proalert/master.zip*    
   fi
 
-  if [ -d "/var/www/proalert" ]
+  if [ -d "/var/www/proalert/public_html" ]
   then
-    rm -rf "/var/www/proalert"
+    rm -rf "/var/www/proalert/public_html"
   fi
 
 
@@ -119,7 +125,35 @@ then
 
   unzip master.zip -d /opt/proalert
 
+#  rm -rf /opt/proalert/master.zip*
+
+#  mkdir -p /var/www/proalert/public_html
+
+  mv  "/opt/proalert/proalert-master/html/" "/var/www/proalert/public_html/"  
+
+  chown -R prometheus:apache "/var/www/proalert/public_html"
+  chmod -R 750 "/var/www/proalert"
+
+  cat > /etc/httpd/sites-available/proalert.conf <<VHOST
+<VirtualHost *:8080>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/proalert/public_html/
+    <Directory /var/www/proalert/public_html/>
+        Options -Indexes
+        AllowOverride all
+        Order allow,deny
+        allow from all
+    </Directory>
+    ErrorLog /var/www/proadmin/error.log
+    CustomLog /var/www/proadmin/access.log combined
+</VirtualHost>
+VHOST
+
+  ln -s /etc/httpd/sites-available/proadmin.conf /etc/httpd/sites-enabled/proadmin.conf
+
+  systemctl restart httpd.service
 fi
+
 
 
 
