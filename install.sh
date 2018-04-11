@@ -155,5 +155,5 @@ VHOST
 fi
 
 
-
-
+printf "\n\n Installation Complete. Some changes might require a reboot. \n\n"
+exit 1
