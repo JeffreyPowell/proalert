@@ -27,6 +27,16 @@ fi
 # yum clean all
 # yum update -y
 
+###   ###   Dissable SELINUX   ###   ###
+
+setenforce 0
+
+ cat > /etc/sysconfig/selinux <<DESELINUX
+SELINUX=disabled
+DESELINUX
+
+
+
 ###   ###   Install APACHE   ###   ###
 
 APACHE_INSTALLED=$(which httpd)
@@ -41,7 +51,7 @@ then
 
   mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.disabled
   
-  #echo "IncludeOptional sites-enabled/*.conf" >> /etc/httpd/conf/httpd.conf
+  echo "IncludeOptional sites-enabled/*.conf" >> /etc/httpd/conf/httpd.conf
   mkdir /etc/httpd/sites-available
   mkdir /etc/httpd/sites-enabled
 
@@ -56,6 +66,8 @@ then
 else
   printf "\n\n Apache is already installed. \n"
 fi
+
+
 
 ###   ###   Install MySQL   ###   ###
 
@@ -109,30 +121,36 @@ then
 #  mkdir -p "/opt/proalert/app" 
 #  cd /opt/proalert/app
 
-  if [ -d "/opt/proalert/proalert-master" ]
-  then
-    rm -rf "/opt/proalert/proalert-master"
-    rm -rf /opt/proalert/master.zip*    
-  fi
+#  if [ -d "/opt/proalert/proalert-master" ]
+#  then
+#    rm -rf "/opt/proalert/proalert-master"
+#    rm -rf /opt/proalert/master.zip*    
+#  fi
 
-  if [ -d "/var/www/proalert/public_html" ]
-  then
-    rm -rf "/var/www/proalert/public_html"
-  fi
 
+  rm -rf /opt/proalert/master.zip*
 
   wget https://github.com/JeffreyPowell/proalert/archive/master.zip
 
   unzip master.zip -d /opt/proalert
 
-#  rm -rf /opt/proalert/master.zip*
+  rm -rf /opt/proalert/master.zip*
 
-#  mkdir -p /var/www/proalert/public_html
 
-  mv  "/opt/proalert/proalert-master/html/" "/var/www/proalert/public_html/"  
+  rm -rf /var/www/proalert
 
-  chown -R prometheus:apache "/var/www/proalert/public_html"
-  chmod -R 750 "/var/www/proalert"
+  mkdir -p /var/www/proalert
+
+  mv  "/opt/proalert/proalert-master/html" "/var/www/proalert/public_html"  
+
+  chown -R prometheus:apache "/var/www/proalert"
+  chmod -R 770 "/var/www/proalert"
+
+  rm -f /etc/httpd/sites-available/proalert.conf
+  rm -f /etc/httpd/sites-enabled/proalert.conf
+
+
+  echo "Listen 8080" >> /etc/httpd/conf/httpd.conf
 
   cat > /etc/httpd/sites-available/proalert.conf <<VHOST
 <VirtualHost *:8080>
@@ -144,14 +162,19 @@ then
         Order allow,deny
         allow from all
     </Directory>
-    ErrorLog /var/www/proadmin/error.log
-    CustomLog /var/www/proadmin/access.log combined
+    ErrorLog /var/www/proalert/error.log
+    CustomLog /var/www/proalert/access.log combined
 </VirtualHost>
 VHOST
 
-  ln -s /etc/httpd/sites-available/proadmin.conf /etc/httpd/sites-enabled/proadmin.conf
+
+  ln -s /etc/httpd/sites-available/proalert.conf /etc/httpd/sites-enabled/proalert.conf
+
 
   systemctl restart httpd.service
+
+else
+  printf "\n\n ProAlert is already installed. \n"
 fi
 
 
