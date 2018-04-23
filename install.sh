@@ -102,7 +102,7 @@ fi
 
 ###   ###   Install ProAlert   ###   ###
 
-if [ ! -f "/opt/proalert/app/README.md" ]
+if [ ! -d "/opt/proalert/proalert-master" ]
 then
   printf "\n\n Installing ProAlert ...\n"
   
