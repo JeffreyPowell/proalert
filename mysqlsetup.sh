@@ -22,8 +22,8 @@ USE $DB_NAME;
 CREATE TABLE IF NOT EXISTS system    (      id            int(11)       NOT NULL AUTO_INCREMENT PRIMARY KEY,
                                             name          varchar(256)  NOT NULL,
                                             url           varchar(256)  NOT NULL,
-                                            port          tinyint(3)    DEFAULT NULL,
-                                            support       int(11)       DEFAULT 0 );
+                                            port          tinyint(3)    NOT NULL,
+                                            tier_id       int(11)       DEFAULT NULL );
 CREATE TABLE IF NOT EXISTS metric    (      id            int(11)       NOT NULL AUTO_INCREMENT PRIMARY KEY,
                                             name          varchar(256)  NOT NULL,
                                             query         varchar(1024) NOT NULL );
@@ -37,6 +37,8 @@ CREATE TABLE IF NOT EXISTS alert     (      id            int(11)       NOT NULL
                                             trigger_opp   char(1)       NOT NULL,
                                             channel_id    int(11)       NOT NULL,
                                             status        tinyint(1)    DEFAULT 0 );
+CREATE TABLE IF NOT EXISTS tier      (      id            int(11)       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                            name          varchar(256)  NOT NULL );
 DATABASE
 
 cat > /opt/proadmin/proadmin-master/config.ini <<CONFIG
