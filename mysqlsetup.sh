@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS tier      (      id            int(11)       NOT NULL
                                             name          varchar(256)  NOT NULL );
 DATABASE
 
-cat > /opt/proadmin/proadmin-master/config.ini <<CONFIG
+cat > /opt/proalert/proalert-master/config.ini <<CONFIG
 [db]
 server = $DB_SERVER
 user = $DB_USERNAME
