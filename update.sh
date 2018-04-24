@@ -37,30 +37,35 @@ then
   
   cd /opt/proalert
   
+  # save config file
+  rm -f /tmp/proalert-config.tmp
+  mv /opt/proalert/proalert-master/config.ini /tmp/proalert-config.tmp
+  
+  # remove existing files
   rm -rf /opt/proalert/master.zip*
   rm -rf /opt/proalert/proalert-master
-
-  wget https://github.com/JeffreyPowell/proalert/archive/master.zip
-
-  unzip master.zip -d /opt/proalert
-
-  rm -rf /opt/proalert/master.zip*
-
-
   rm -rf /var/www/proalert/*
 
+  # download master branch
+  wget https://github.com/JeffreyPowell/proalert/archive/master.zip
+  unzip master.zip -d /opt/proalert
+  rm -rf /opt/proalert/master.zip*
+  
+  # restore config file
+  rm /opt/proalert/proalert-master/config.ini
+  mv /tmp/proalert-config.tmp /opt/proalert/proalert-master/config.ini
+  rm -f /tmp/proalert-config.tmp
+  
+  # move www files to web directory
   mv  "/opt/proalert/proalert-master/html" "/var/www/proalert/public_html"  
-
   chown -R prometheus:apache "/var/www/proalert"
   chmod -R 770 "/var/www/proalert"
 
-
+  # restart apache
   systemctl restart httpd.service
 
 else
   printf "\n\n ProAlert is not installed. \n"
 fi
 
-
-printf "\n\n Installation Complete. Some changes might require a reboot. \n\n"
 exit 1
