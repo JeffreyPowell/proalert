@@ -76,7 +76,7 @@ if [[ "$MYSQL_INSTALLED" == "" ]]
 then
   printf "\n\n Installing MYSQL ...\n"
   
-  yum install mariadb-server mariadb -y
+  yum install mariadb-server mariadb MySQL-python -y
 
   systemctl start mariadb.service
   systemctl enable mariadb.service
@@ -90,6 +90,7 @@ then
 else
   printf "\n\n MYSQL is already installed. \n"
 fi
+
 
 ###   ###   Install PHP   ###   ###
 
