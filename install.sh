@@ -144,6 +144,8 @@ then
 
   mv  "/opt/proalert/proalert-master/html" "/var/www/proalert/public_html"  
 
+  useradd prometheus
+  
   chown -R prometheus:apache "/var/www/proalert"
   chmod -R 770 "/var/www/proalert"
 
