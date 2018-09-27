@@ -131,6 +131,8 @@ then
 
   rm -rf /opt/proalert/master.zip*
 
+  yum install python-requests
+  
   wget https://github.com/JeffreyPowell/proalert/archive/master.zip
 
   unzip master.zip -d /opt/proalert
